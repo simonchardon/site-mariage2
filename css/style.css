@@ -214,8 +214,8 @@ h3 { margin: 0; }
   position: absolute;
   pointer-events: none;
 }
-.fleurs-haut { left: clamp(6px, 1.5vw, 24px); top: clamp(6px, 1.5vw, 24px); width: clamp(190px, 30vw, 430px); }
-.fleurs-bas { right: clamp(6px, 1.5vw, 24px); bottom: clamp(6px, 1.5vw, 24px); width: clamp(180px, 28vw, 400px); }
+.fleurs-haut { left: 0; top: 0; width: clamp(200px, 25vw, 380px); }
+.fleurs-bas { right: 0; bottom: 0; width: clamp(200px, 30vw, 440px); }
 
 .ouverture-titre {
   position: relative;
@@ -655,7 +655,7 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .nav a[href="index.html"] { display: none; }
   .nav .nav-reponse { padding: 10px 16px; }
   .fleurs-haut { width: 165px; }
-  .fleurs-bas { width: 170px; }
+  .fleurs-bas { width: 195px; }
   .ouverture { min-height: 560px; }
   .defiler { margin-top: 40px; }
   .etape { padding: 0; }
