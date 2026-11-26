@@ -686,10 +686,10 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
     html.etapes-mobile.sans-transition .page-etape { transition: none; }
     html.etapes-mobile .etape-ecran.page-etape {
       justify-content: safe center;
-      padding-top: 92px;
-      padding-bottom: 72px;
+      padding-top: 88px;
+      padding-bottom: 52px;
     }
-    html.etapes-mobile .lieu.page-etape { padding-top: 76px; padding-bottom: 40px; }
+    html.etapes-mobile .lieu.page-etape { padding-top: 72px; padding-bottom: 20px; }
     html.etapes-mobile .page-etape > .pied { margin-top: 32px; padding-bottom: 0; }
   }
 

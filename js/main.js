@@ -283,8 +283,9 @@
         var p = etapes[courante];
         geste = {
           y: e.touches[0].clientY, t: Date.now(), dy: 0, passage: null,
-          haut: p.scrollTop <= 1,
-          bas: p.scrollTop + p.clientHeight >= p.scrollHeight - 1
+          // Un dépassement de quelques pixels ne mérite pas un geste de plus
+          haut: p.scrollTop <= 1 || p.scrollHeight - p.clientHeight <= 24,
+          bas: p.scrollTop + p.clientHeight >= p.scrollHeight - 24
         };
       }, { passive: true });
       document.addEventListener('touchmove', function (e) {
