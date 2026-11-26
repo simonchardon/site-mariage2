@@ -13,18 +13,27 @@
 </head>
 <body>
 
+  <header class="entete entete-accueil">
+    <a class="logo" href="#accueil" aria-label="Accueil — Maëlle et Raphaël">M <span>&amp;</span> R</a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="menu" aria-label="Navigation principale">
+      <a href="#accueil" class="nav-accueil" aria-current="page">Accueil</a>
+      <a href="#lieu" class="nav-section">Le lieu</a>
+      <a href="#deroulement" class="nav-section">Déroulement</a>
+      <a href="#dress-code" class="nav-section">Dress code</a>
+      <a href="#infos" class="nav-section">Infos pratiques</a>
+      <a href="#contact" class="nav-section">Contact</a>
+      <a href="musiques.html">Vos musiques</a>
+      <a class="nav-reponse" href="rsvp.html">Réponse</a>
+    </nav>
+  </header>
+
   <!-- Première étape : le titre seul entre les fleurs -->
   <div class="ouverture" id="accueil" data-etape="Accueil">
     <img class="fleurs fleurs-haut" src="assets/images/fleurs-haut-gauche.webp" alt="" width="900" height="883">
     <img class="fleurs fleurs-bas" src="assets/images/fleurs-bas-droite.webp" alt="" width="850" height="870">
-
-    <header class="entete entete-accueil">
-      <nav class="nav" aria-label="Navigation principale">
-        <a href="index.html" aria-current="page">Accueil</a>
-        <a href="musiques.html">Vos musiques</a>
-        <a class="nav-reponse" href="rsvp.html">Réponse</a>
-      </nav>
-    </header>
 
     <section class="ouverture-titre" aria-labelledby="titre-accueil">
       <p class="surtitre">Nous nous marions</p>

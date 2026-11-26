@@ -32,6 +32,24 @@
     cible.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   });
 
+  /* ---------- Menu burger (mobile) ---------- */
+  var entete = document.querySelector('.entete');
+  var burger = entete && entete.querySelector('.burger');
+  if (burger) {
+    var basculerMenu = function (ouvert) {
+      entete.classList.toggle('ouvert', ouvert);
+      burger.setAttribute('aria-expanded', String(ouvert));
+      burger.setAttribute('aria-label', ouvert ? 'Fermer le menu' : 'Ouvrir le menu');
+    };
+    burger.addEventListener('click', function () { basculerMenu(!entete.classList.contains('ouvert')); });
+    // Un lien du menu ou un clic ailleurs referme le menu
+    document.addEventListener('click', function (e) {
+      if (!entete.classList.contains('ouvert')) return;
+      if (e.target.closest('.nav a') || !entete.contains(e.target)) basculerMenu(false);
+    }, true);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') basculerMenu(false); });
+  }
+
   /* ---------- Animations ---------- */
   var animations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
     'IntersectionObserver' in window;
@@ -261,7 +279,7 @@
 
       var geste = null;
       document.addEventListener('touchstart', function (e) {
-        if (!modeMobile || e.touches.length > 1) { geste = null; return; }
+        if (!modeMobile || e.touches.length > 1 || (entete && entete.classList.contains('ouvert'))) { geste = null; return; }
         var p = etapes[courante];
         geste = {
           y: e.touches[0].clientY, t: Date.now(), dy: 0, passage: null,
