@@ -262,22 +262,21 @@ h3 { margin: 0; }
 }
 .titre-mot { display: block; margin: -0.42em 0 -0.38em; fill: currentColor; overflow: visible; }
 .titre-esperluette { color: var(--olive); }
+/* La plume : un trait épais qui suit le contour de chaque lettre, dans un masque.
+   L'encre apparaît donc directement pleine, dans le sens du tracé. */
+.plume { fill: #fff; stroke: #fff; stroke-width: 150; stroke-linecap: round; stroke-linejoin: round; }
 @media (prefers-reduced-motion: no-preference) {
-  .anime .titre-trace path {
+  .anime .plume {
     fill-opacity: 0;
-    stroke: currentColor;
-    stroke-width: 11;
-    stroke-linecap: round;
-    stroke-linejoin: round;
     stroke-dasharray: 1 1;
     stroke-dashoffset: 1;
     animation:
-      tracer 1.4s cubic-bezier(.55,.05,.35,1) calc(0.7s + var(--n) * 0.17s) forwards,
-      remplir 1.1s ease calc(1.5s + var(--n) * 0.17s) forwards;
+      ecrire-plume 0.75s cubic-bezier(.4,0,.4,1) calc(0.7s + var(--n) * 0.2s) forwards,
+      remplir-plume 0.2s linear calc(1.45s + var(--n) * 0.2s) forwards;
   }
 }
-@keyframes tracer { to { stroke-dashoffset: 0; } }
-@keyframes remplir { to { fill-opacity: 1; stroke-opacity: 0; } }
+@keyframes ecrire-plume { to { stroke-dashoffset: 0; } }
+@keyframes remplir-plume { to { fill-opacity: 1; } }
 
 /* ---------- Sections de l'accueil ---------- */
 
