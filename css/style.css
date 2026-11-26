@@ -282,7 +282,7 @@ h3 { margin: 0; }
 /* ---------- Sections de l'accueil ---------- */
 
 .section { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px, 5vw, 40px); text-align: center; }
-.section > :not(.voile) { position: relative; }
+.section > :not(.voile):not(.fleurs-coin) { position: relative; }
 .contenu-etroit { max-width: 680px; margin: 0 auto; }
 .contenu-large { max-width: 1080px; margin: 0 auto; }
 
@@ -291,6 +291,10 @@ h3 { margin: 0; }
 .texte-empile { display: flex; flex-direction: column; gap: 14px; }
 
 /* Chers invités */
+.invites { overflow: hidden; }
+.invites .voile-peche { left: -18%; top: 4%; width: min(620px, 95vw); height: 70%; }
+.invites .voile-jaune { right: -16%; bottom: 0; width: min(560px, 90vw); height: 60%; }
+.invites .guirlande { width: clamp(110px, 16vw, 170px); margin: 0 auto 14px; }
 .invites .texte-empile { margin-top: 28px; }
 .invites .italique { margin-top: 8px; font-size: 24px; }
 .invites .surtitre { margin-top: 28px; }
@@ -367,6 +371,12 @@ h3 { margin: 0; }
 /* Infos pratiques */
 .infos { border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); padding-top: clamp(64px, 9vw, 112px); padding-bottom: clamp(64px, 9vw, 112px); }
 .infos h2 { margin-bottom: 48px; }
+.infos { position: relative; overflow: hidden; }
+.infos .voile-jaune { left: -12%; top: 0; width: min(640px, 90vw); height: 80%; }
+.infos .voile-peche { right: -12%; bottom: 0; width: min(640px, 90vw); height: 80%; }
+.fleurs-coin { position: absolute; pointer-events: none; opacity: 0.9; }
+.fleurs-coin-haut { left: clamp(6px, 1.5vw, 24px); top: clamp(6px, 1.5vw, 24px); width: clamp(110px, 15vw, 220px); }
+.fleurs-coin-bas { right: clamp(6px, 1.5vw, 24px); bottom: clamp(6px, 1.5vw, 24px); width: clamp(110px, 15vw, 220px); }
 .grille-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 40px; }
 .info { display: flex; flex-direction: column; gap: 10px; }
 .info h3 { font-size: 13px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: var(--olive); }
@@ -901,6 +911,7 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .nav a, .nav a[href="index.html"] { display: block; padding: 12px 0; }
   .nav .nav-reponse { margin-top: 14px; padding: 13px 30px; }
   .section { scroll-margin-top: 68px; }
+  .fleurs-coin-haut { top: 74px; }
   .entete-accueil { transition: background-color 0.5s ease, box-shadow 0.5s ease, -webkit-backdrop-filter 0.5s ease, backdrop-filter 0.5s ease; }
   .entete-accueil .logo { transition: opacity 0.5s ease; }
   .entete-accueil.discret:not(.ouvert) { background-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
