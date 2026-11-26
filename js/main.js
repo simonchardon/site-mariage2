@@ -4,13 +4,23 @@
 (function () {
   'use strict';
 
-  /* ---------- Rechargement : on repart toujours du début (sauf lien vers une section) ---------- */
+  /* ---------- Rechargement : on repart toujours du début ---------- */
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  if (!location.hash) {
-    window.scrollTo(0, 0);
-    window.addEventListener('load', function () { window.scrollTo(0, 0); });
-    window.addEventListener('pageshow', function (e) { if (e.persisted) window.scrollTo(0, 0); });
-  }
+  if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+  var auDebut = function () { window.scrollTo({ top: 0, behavior: 'instant' }); };
+  auDebut();
+  window.addEventListener('load', auDebut);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) auDebut(); });
+
+  // Liens internes (« Faites défiler », repères) : on défile sans ajouter d'ancre à l'adresse
+  document.addEventListener('click', function (e) {
+    var lien = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!lien) return;
+    var cible = document.getElementById(lien.getAttribute('href').slice(1));
+    if (!cible) return;
+    e.preventDefault();
+    cible.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
 
   /* ---------- Animations ---------- */
   var animations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
