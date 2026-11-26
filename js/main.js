@@ -50,6 +50,16 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') basculerMenu(false); });
   }
 
+  // Accueil : sur le premier écran, seul le burger est visible ; l'en-tête apparaît dès qu'on descend
+  var enteteAccueil = document.querySelector('.entete-accueil');
+  var marquerEntete = function (enHaut) {
+    if (enteteAccueil) enteteAccueil.classList.toggle('discret', enHaut);
+  };
+  marquerEntete(true);
+  window.addEventListener('scroll', function () {
+    if (!document.documentElement.classList.contains('etapes-mobile')) marquerEntete(window.scrollY < 10);
+  }, { passive: true });
+
   /* ---------- Animations ---------- */
   var animations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
     'IntersectionObserver' in window;
@@ -239,6 +249,7 @@
       var courante = 0;
       var enTransition = false;
       var poser = function () {
+        marquerEntete(courante === 0);
         etapes.forEach(function (e, n) {
           e.style.setProperty('--decalage', n - courante);
           e.toggleAttribute('inert', n !== courante);

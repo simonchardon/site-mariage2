@@ -902,5 +902,8 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .nav a, .nav a[href="index.html"] { display: block; padding: 12px 0; }
   .nav .nav-reponse { margin-top: 14px; padding: 13px 30px; }
   .section { scroll-margin-top: 68px; }
-  .fleurs-haut { top: 76px; }
+  .entete-accueil { transition: background-color 0.5s ease, box-shadow 0.5s ease, -webkit-backdrop-filter 0.5s ease, backdrop-filter 0.5s ease; }
+  .entete-accueil .logo { transition: opacity 0.5s ease; }
+  .entete-accueil.discret:not(.ouvert) { background-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .entete-accueil.discret:not(.ouvert) .logo { opacity: 0; pointer-events: none; }
 }
