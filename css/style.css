@@ -663,6 +663,15 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
     .etapes-actives .etape-ecran > .contenu-large, .etapes-actives .etape-ecran > .contenu-etroit, .etapes-actives .etape-ecran > .grille-3 { width: 100%; }
   }
 
+  /* Mobile : défilement natif du téléphone, aimanté au début de chaque section.
+     Une section plus haute que l'écran se parcourt librement, et un lancer ne
+     saute jamais une section (scroll-snap-stop). */
+  @media (max-width: 899px), (max-height: 639px) {
+    html.etapes-actives { scroll-snap-type: y mandatory; }
+    .etapes-actives .etape-ecran { scroll-snap-align: start; scroll-snap-stop: always; }
+    .etapes-actives .pied { scroll-snap-align: end; }
+  }
+
   /* ---------- Repères latéraux ---------- */
   .reperes {
     position: fixed;
