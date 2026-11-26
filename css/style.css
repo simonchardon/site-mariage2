@@ -614,6 +614,15 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
       justify-content: center;
     }
     .etapes-actives .contact { min-height: calc(100svh - 150px); }
+    .etapes-actives .etape-ecran { padding-top: clamp(32px, 7svh, 96px); padding-bottom: clamp(32px, 7svh, 96px); }
+    .etapes-actives .lieu { padding-top: 32px; padding-bottom: 24px; }
+    .etapes-actives .ouverture { height: 100vh; height: 100svh; }
+    .etapes-actives .lieu .guirlande { width: 150px; margin-bottom: 20px; }
+    .etapes-actives .lieu .chateau { width: auto; max-height: calc(100svh - 370px); }
+    .etapes-actives .deroulement { padding-top: 48px; padding-bottom: 48px; }
+    .etapes-actives .deroulement h2 { margin-bottom: 32px; }
+    .etapes-actives .etape img { height: clamp(90px, 16svh, 150px); }
+    .etapes-actives .deroulement .italique { margin-top: 28px; }
     .etapes-actives .etape-ecran > .contenu-large, .etapes-actives .etape-ecran > .contenu-etroit, .etapes-actives .etape-ecran > .grille-3 { width: 100%; }
   }
 

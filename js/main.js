@@ -97,7 +97,7 @@
       etapes.forEach(function (e) { suivi.observe(e); });
     }
 
-    // Ordinateur : une molette ou une touche = une étape (si l'étape tient dans l'écran)
+    // Ordinateur : une molette ou une touche = une étape (ou une tranche d'étape haute)
     var grandEcran = window.matchMedia('(min-width: 900px) and (min-height: 640px)');
     if (etapes.length > 1) {
       var verrou = false;
@@ -134,29 +134,33 @@
         };
         setTimeout(liberer, duree);
       };
-      // Laisse défiler librement à l'intérieur d'une étape plus haute que l'écran
-      var libre = function (sens) {
+      // Prochaine position : la section suivante, ou la suite d'une section plus haute que l'écran
+      var cibleSuivante = function (sens) {
+        var h = window.innerHeight;
+        var y = window.scrollY;
+        var pas = Math.round(h * 0.8);
         var r = etapeEnHaut().getBoundingClientRect();
-        if (r.height <= window.innerHeight + 8) return false;
-        return sens > 0 ? r.bottom > window.innerHeight + 4 : r.top < -4;
+        var cible = null;
+        if (sens > 0) {
+          // Reste de la section courante sous l'écran : on le montre par tranches
+          if (r.bottom > h + 60) return y + Math.min(r.bottom - h, pas);
+          etapes.forEach(function (e) { if (!cible && e.getBoundingClientRect().top > 4) cible = e; });
+          return cible ? cible.getBoundingClientRect().top + y : document.documentElement.scrollHeight - h;
+        }
+        // Vers le haut : d'abord le début de la section courante, par tranches si elle est haute
+        if (r.top < -60) return y + Math.max(r.top, -pas);
+        etapes.forEach(function (e) { if (e.getBoundingClientRect().top < -4) cible = e; });
+        if (!cible) return null;
+        var rc = cible.getBoundingClientRect();
+        // Section précédente haute : on arrive sur sa fin, pas sur son début
+        return rc.height > h + 60 ? y + rc.bottom - h : rc.top + y;
       };
       var guider = function (sens, evenement) {
         if (!grandEcran.matches) return;
-        if (libre(sens)) return;
         evenement.preventDefault();
         if (verrou) return;
-        var cible = null;
-        if (sens > 0) {
-          // Première étape encore sous le haut de l'écran
-          etapes.forEach(function (e) { if (!cible && e.getBoundingClientRect().top > 4) cible = e; });
-          allerVers(cible
-            ? cible.getBoundingClientRect().top + window.scrollY
-            : document.documentElement.scrollHeight);
-        } else {
-          // Dernière étape déjà passée au-dessus du haut de l'écran
-          etapes.forEach(function (e) { if (e.getBoundingClientRect().top < -4) cible = e; });
-          if (cible) allerVers(cible.getBoundingClientRect().top + window.scrollY);
-        }
+        var y = cibleSuivante(sens);
+        if (y !== null && Math.abs(y - window.scrollY) > 2) allerVers(Math.max(0, y));
       };
       var syncClasse = function () {
         document.documentElement.classList.toggle('etapes-guidees', grandEcran.matches);
@@ -168,9 +172,8 @@
         if (!grandEcran.matches || e.ctrlKey) return;
         var sens = e.deltaY > 0 ? 1 : -1;
         dernierEvenement = Date.now();
-        if (verrou) { e.preventDefault(); return; }
-        if (libre(sens)) return;
         e.preventDefault();
+        if (verrou) return;
         cumul += e.deltaY;
         if (Math.abs(cumul) < 30) return;
         guider(sens, e);
