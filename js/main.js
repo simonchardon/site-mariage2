@@ -137,18 +137,22 @@
         etapes.forEach(function (e) { if (e.getBoundingClientRect().top <= 4) courante = e; });
         return courante;
       };
-      var allerVers = function (y) {
+      var glissement = 0; // identifiant du glissement en cours (0 = aucun)
+      var allerVers = function (y, dureeVoulue) {
         verrou = true;
+        var id = ++glissement;
         var debut = Date.now();
         var depart = window.scrollY;
         var distance = y - depart;
-        var duree = 1400;
+        var duree = dureeVoulue || 1400;
         // Glissement lent, accéléré puis freiné (easeInOutCubic)
         var glisser = function () {
+          if (id !== glissement) return; // interrompu (doigt posé sur l'écran)
           var t = Math.min(1, (Date.now() - debut) / duree);
           var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
           window.scrollTo({ top: depart + distance * e, behavior: 'instant' });
           if (t < 1) requestAnimationFrame(glisser);
+          else setTimeout(function () { if (id === glissement) glissement = 0; }, 80);
         };
         requestAnimationFrame(glisser);
         // On attend la fin du glissement ET la fin de l'inertie du pavé tactile
@@ -206,6 +210,46 @@
         if (Math.abs(cumul) < 30) return;
         guider(sens, e);
       }, { passive: false });
+
+      // Mobile : défilement libre dans une section, aimantation douce entre deux sections
+      var doigt = false;
+      var yPrecedent = window.scrollY;
+      var sensDefilement = 1;
+      var minuterie = null;
+      var aimanter = function () {
+        if (grandEcran.matches || doigt || glissement) return;
+        var h = window.innerHeight;
+        var y = window.scrollY;
+        var sens = sensDefilement;
+        for (var i = 1; i < etapes.length; i++) {
+          var b = etapes[i].getBoundingClientRect().top;
+          if (b <= 2 || b >= h - 2) continue;
+          // Une frontière de section est visible : on choisit l'une des deux sections
+          var precedente = etapes[i - 1].getBoundingClientRect();
+          var finPrecedente = precedente.height > h + 2 ? y + b - h : y + precedente.top;
+          var versSuivante = sens > 0 ? b < h * 0.8 : b < h * 0.2;
+          allerVers(versSuivante ? y + b : finPrecedente, 650);
+          return;
+        }
+      };
+      window.addEventListener('touchstart', function () {
+        doigt = true;
+        glissement = 0; // le doigt reprend la main
+        verrou = false;
+      }, { passive: true });
+      window.addEventListener('touchend', function () {
+        doigt = false;
+        clearTimeout(minuterie);
+        minuterie = setTimeout(aimanter, 160);
+      }, { passive: true });
+      window.addEventListener('scroll', function () {
+        var y = window.scrollY;
+        if (!glissement && Math.abs(y - yPrecedent) > 1) sensDefilement = y > yPrecedent ? 1 : -1;
+        yPrecedent = y;
+        if (glissement || doigt) return;
+        clearTimeout(minuterie);
+        minuterie = setTimeout(aimanter, 160);
+      }, { passive: true });
 
       window.addEventListener('keydown', function (e) {
         if (e.target.closest && e.target.closest('input, textarea, select, button')) return;

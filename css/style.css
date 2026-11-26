@@ -630,7 +630,17 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
 @media (prefers-reduced-motion: no-preference) {
 
   /* ---------- Étapes : une section = un écran ---------- */
-  /* Mobile : défilement naturel du téléphone (pas d'aimantation), les étapes sont guidées sur ordinateur seulement */
+  /* Chaque section occupe au moins un écran ; sur mobile on y défile librement */
+  .etapes-actives .etape-ecran {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .etapes-actives .contact { min-height: calc(100svh - 150px); }
+  .etapes-actives .ouverture { height: 100vh; height: 100svh; }
+  .etapes-actives .etape-ecran > .contenu-large, .etapes-actives .etape-ecran > .contenu-etroit, .etapes-actives .etape-ecran > .grille-3 { width: 100%; }
 
   @media (min-width: 900px) and (min-height: 640px) {
     .etapes-actives .etape-ecran {
