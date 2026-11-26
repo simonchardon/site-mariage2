@@ -925,13 +925,9 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
     top: 0;
     left: 0;
     right: 0;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
   }
   html.etapes-mobile .page-etape { z-index: 1; }
   html.etapes-mobile .entete { z-index: 100; }
   .burger { -webkit-appearance: none; appearance: none; align-items: center; }
-  .burger span { width: 24px; height: 1.5px; flex: none; border-radius: 1px; }
-  .entete.ouvert .burger span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-  .entete.ouvert .burger span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+  .burger span { width: 24px; height: 1px; flex: none; }
 }
