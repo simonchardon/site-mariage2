@@ -254,7 +254,7 @@ h3 { margin: 0; }
 /* ---------- Sections de l'accueil ---------- */
 
 .section { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px, 5vw, 40px); text-align: center; }
-.section > * { position: relative; }
+.section > :not(.voile) { position: relative; }
 .contenu-etroit { max-width: 680px; margin: 0 auto; }
 .contenu-large { max-width: 1080px; margin: 0 auto; }
 
@@ -589,4 +589,172 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .defiler { margin-top: 40px; }
   .etape { padding: 0; }
   .histoire { text-align: center; }
+}
+
+/* ==========================================================================
+   Animations et étapes au défilement
+   (désactivées si l'utilisateur préfère réduire les animations)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ---------- Étapes : une section = un écran ---------- */
+  html.etapes-actives { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+  .etapes-actives .ouverture,
+  .etapes-actives .etape-ecran { scroll-snap-align: start; }
+  .etapes-actives .pied { scroll-snap-align: end; }
+
+  @media (min-width: 900px) and (min-height: 640px) {
+    html.etapes-actives.etapes-guidees { scroll-snap-type: none; }
+    .etapes-actives .etape-ecran {
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .etapes-actives .contact { min-height: calc(100svh - 150px); }
+    .etapes-actives .etape-ecran > .contenu-large, .etapes-actives .etape-ecran > .contenu-etroit, .etapes-actives .etape-ecran > .grille-3 { width: 100%; }
+  }
+
+  /* ---------- Repères latéraux ---------- */
+  .reperes {
+    position: fixed;
+    right: clamp(12px, 2vw, 28px);
+    top: 50%;
+    z-index: 10;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    opacity: 0;
+    transition: opacity 0.6s;
+  }
+  .reperes.visible { opacity: 1; }
+  .reperes a {
+    position: relative;
+    display: block;
+    width: 22px;
+    height: 22px;
+  }
+  .reperes a::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--olive);
+    transition: transform 0.35s, background-color 0.35s;
+  }
+  .reperes a[aria-current="step"]::before { background: var(--olive); transform: scale(1.35); }
+  .reperes span {
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translate(6px, -50%);
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--olive);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .reperes a:hover span, .reperes a:focus-visible span { opacity: 1; transform: translate(0, -50%); }
+  @media (max-width: 600px) {
+    .reperes { right: 6px; gap: 8px; }
+    .reperes a { width: 16px; height: 16px; }
+    .reperes a::before { inset: 5px; }
+    .reperes span { display: none; }
+  }
+
+  /* ---------- Ouverture ---------- */
+  .anime .fleurs-haut { transform-origin: 0 0; animation: eclore 1.8s cubic-bezier(.2,.7,.2,1) both, balancer-h 9s ease-in-out 1.8s infinite; }
+  .anime .fleurs-bas { transform-origin: 100% 100%; animation: eclore 1.8s cubic-bezier(.2,.7,.2,1) 0.35s both, balancer-b 10s ease-in-out 2.2s infinite; }
+  @keyframes eclore { from { opacity: 0; transform: scale(0.55) rotate(-6deg); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes balancer-h { 50% { transform: rotate(1.6deg); } }
+  @keyframes balancer-b { 50% { transform: rotate(-1.8deg); } }
+
+  .anime .entete-accueil { animation: apparaitre 1s ease 1.6s both; }
+  .anime .ouverture-titre .surtitre { animation: espacer 1.4s ease 0.5s both; }
+  .anime .ouverture-titre h1 { animation: ecrire 2.2s cubic-bezier(.45,.05,.3,1) 0.9s both; }
+  .anime .ouverture-titre h1 span { display: inline-block; animation: tomber 1.1s cubic-bezier(.3,1.4,.5,1) 2s both; }
+  .anime .ouverture-date { animation: espacer 1.4s ease 2.4s both; }
+  .anime .defiler { animation: apparaitre 1s ease 3s both; }
+
+  @keyframes apparaitre { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes espacer { from { opacity: 0; letter-spacing: 0.05em; } }
+  @keyframes ecrire {
+    from { clip-path: inset(-30% 100% -30% -5%); opacity: 0.2; }
+    15% { opacity: 1; }
+    to { clip-path: inset(-30% -5% -30% -5%); opacity: 1; }
+  }
+  @keyframes tomber { from { opacity: 0; transform: translateY(-18px) rotate(-12deg) scale(0.7); } }
+
+  /* ---------- Voiles aquarelle qui respirent ---------- */
+  .anime .voile { animation: respirer 14s ease-in-out infinite alternate; }
+  @keyframes respirer { to { opacity: 0.65; scale: 1.08; } }
+
+  /* ---------- Apparitions au défilement ---------- */
+  .anime .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1), filter 1.2s ease, clip-path 1.6s cubic-bezier(.45,.05,.3,1);
+    transition-delay: calc(var(--i, 0) * 120ms);
+  }
+  .anime .reveal.visible { opacity: 1; transform: none; }
+
+  /* Titres manuscrits : tracés de gauche à droite */
+  .anime .reveal-ecrire { transform: none; clip-path: inset(-30% 100% -30% -5%); }
+  .anime .reveal-ecrire.visible { clip-path: inset(-30% -5% -30% -5%); }
+
+  /* Illustrations : l'aquarelle se dépose */
+  .anime .reveal-aquarelle { transform: scale(1.06); filter: blur(10px) saturate(0.6); }
+  .anime .reveal-aquarelle.visible { transform: none; filter: none; }
+
+  /* Pastilles et petites fleurs : éclosion */
+  .anime .reveal-pop { transform: scale(0.4); transition-timing-function: ease, cubic-bezier(.3,1.5,.5,1); }
+  .anime .reveal-pop.visible { transform: none; }
+
+  /* Guirlande */
+  .anime .reveal-guirlande { transform: scale(0.7) rotate(-8deg); }
+  .anime .reveal-guirlande.visible { transform: none; }
+
+  /* Filets qui se dessinent */
+  .anime .infos { border-color: transparent; }
+  .anime .infos::before, .anime .infos::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--filet);
+    transform: scaleX(0);
+    transition: transform 1.6s cubic-bezier(.45,.05,.3,1);
+  }
+  .anime .infos::before { top: 0; }
+  .anime .infos::after { bottom: 0; }
+  .anime .infos.trace::before, .anime .infos.trace::after { transform: none; }
+
+  /* Boutons : léger soulèvement */
+  .bouton { transition: background-color 0.2s, transform 0.25s, box-shadow 0.25s; }
+  .bouton:hover { transform: translateY(-2px); }
+  .bouton:not(.bouton-trait):hover { box-shadow: 0 10px 24px -12px rgba(74, 63, 54, 0.5); }
+
+  /* Étapes de la journée : les vignettes flottent au survol */
+  .etape img { transition: transform 0.5s cubic-bezier(.2,.7,.2,1); }
+  .etape:hover img { transform: translateY(-6px) rotate(-1.5deg); }
+  .pastille { transition: transform 0.3s cubic-bezier(.3,1.5,.5,1); }
+  .couleurs li:hover .pastille { transform: scale(1.12); }
+
+  /* Pages intérieures : entrée douce */
+  .anime .page-contenu > *, .anime .entete-page > * { animation: monter 1s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 110ms + 150ms); }
+  .anime .page h1 { animation: ecrire 1.8s cubic-bezier(.45,.05,.3,1) 0.2s both; }
+  .anime .page .entete { animation: apparaitre 0.8s ease both; }
+  @keyframes monter { from { opacity: 0; transform: translateY(22px); } }
+
+  /* Listes de la page musiques */
+  .liste li { animation: monter 0.45s cubic-bezier(.2,.7,.2,1) both; }
+  tbody tr { animation: apparaitre 0.6s ease both; }
 }

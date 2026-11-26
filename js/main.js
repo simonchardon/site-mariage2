@@ -4,6 +4,179 @@
 (function () {
   'use strict';
 
+  /* ---------- Animations ---------- */
+  var animations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    'IntersectionObserver' in window;
+
+  if (animations) {
+    document.documentElement.classList.add('anime');
+
+    // Pages intérieures : ordre d'entrée des blocs
+    document.querySelectorAll('.page-contenu, .entete-page').forEach(function (bloc) {
+      Array.prototype.forEach.call(bloc.children, function (enfant, i) {
+        enfant.style.setProperty('--i', i);
+      });
+    });
+
+    // Accueil : apparitions au défilement, section par section
+    var marquer = function (el, type, i) {
+      el.classList.add('reveal');
+      if (type) el.classList.add('reveal-' + type);
+      el.style.setProperty('--i', i);
+    };
+    document.querySelectorAll('.section').forEach(function (section) {
+      var i = 0;
+      section.querySelectorAll(
+        '.guirlande, .surtitre, h2, .texte-empile > *, .italique, .chateau, .histoire-photo,' +
+        '.etape, .couleurs li, .presence p, .presence .bouton, .info, .contact .intro, .personne'
+      ).forEach(function (el) {
+        if (el.closest('.etape') && !el.classList.contains('etape')) return;
+        if (el.closest('.texte-empile') && el.parentElement !== el.closest('.texte-empile')) return;
+        if (el.classList.contains('reveal')) return;
+        var type = '';
+        if (el.matches('h2')) type = 'ecrire';
+        else if (el.matches('.chateau, .histoire-photo')) type = 'aquarelle';
+        else if (el.matches('.couleurs li')) type = 'pop';
+        else if (el.matches('.guirlande')) type = 'guirlande';
+        marquer(el, type, i++);
+      });
+    });
+
+    var observateur = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (entree) {
+        if (!entree.isIntersecting) return;
+        var cible = entree.target.revealCible || entree.target;
+        cible.classList.add(cible.classList.contains('infos') ? 'trace' : 'visible');
+        observateur.unobserve(entree.target);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal, .infos').forEach(function (el) {
+      // Un titre masqué par clip-path n'a pas de surface visible : on observe son parent
+      if (el.classList.contains('reveal-ecrire')) {
+        var temoin = document.createElement('span');
+        temoin.setAttribute('aria-hidden', 'true');
+        temoin.style.cssText = 'position:absolute;left:0;right:0;height:1px;pointer-events:none';
+        el.parentElement.insertBefore(temoin, el);
+        temoin.revealCible = el;
+        observateur.observe(temoin);
+        return;
+      }
+      observateur.observe(el);
+    });
+
+    // Étapes : défilement aimanté et repères latéraux
+    var etapes = document.querySelectorAll('[data-etape]');
+    if (etapes.length > 1) {
+      document.documentElement.classList.add('etapes-actives');
+      var reperes = document.createElement('nav');
+      reperes.className = 'reperes';
+      reperes.setAttribute('aria-label', 'Étapes de la page');
+      var liens = [];
+      etapes.forEach(function (etape) {
+        var lien = document.createElement('a');
+        lien.href = '#' + etape.id;
+        var libelle = document.createElement('span');
+        libelle.textContent = etape.getAttribute('data-etape');
+        lien.appendChild(libelle);
+        reperes.appendChild(lien);
+        liens.push(lien);
+      });
+      document.body.appendChild(reperes);
+
+      var suivi = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (entree) {
+          if (!entree.isIntersecting) return;
+          var index = Array.prototype.indexOf.call(etapes, entree.target);
+          liens.forEach(function (l, i) {
+            if (i === index) l.setAttribute('aria-current', 'step');
+            else l.removeAttribute('aria-current');
+          });
+          reperes.classList.toggle('visible', index > 0);
+        });
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      etapes.forEach(function (e) { suivi.observe(e); });
+    }
+
+    // Ordinateur : une molette ou une touche = une étape (si l'étape tient dans l'écran)
+    var grandEcran = window.matchMedia('(min-width: 900px) and (min-height: 640px)');
+    if (etapes.length > 1) {
+      var verrou = false;
+      var cumul = 0;
+      var indexCourant = function () {
+        var milieu = window.innerHeight / 2;
+        var courant = 0;
+        etapes.forEach(function (e, i) { if (e.getBoundingClientRect().top <= milieu) courant = i; });
+        return courant;
+      };
+      var allerA = function (i) {
+        var cible = i >= etapes.length ? document.querySelector('.pied') : etapes[Math.max(0, i)];
+        if (!cible) return;
+        verrou = true;
+        var y = i >= etapes.length
+          ? document.documentElement.scrollHeight
+          : cible.getBoundingClientRect().top + window.scrollY;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        setTimeout(function () { verrou = false; cumul = 0; }, 950);
+      };
+      // Laisse défiler librement à l'intérieur d'une étape plus haute que l'écran
+      var libre = function (sens) {
+        var e = etapes[indexCourant()];
+        var r = e.getBoundingClientRect();
+        return sens > 0 ? r.bottom > window.innerHeight + 4 : r.top < -4;
+      };
+      var guider = function (sens, evenement) {
+        if (!grandEcran.matches) return;
+        if (libre(sens)) return;
+        evenement.preventDefault();
+        if (verrou) return;
+        var i = indexCourant();
+        // Dans le pied de page, on remonte vers la dernière étape
+        if (sens < 0 && etapes[i].getBoundingClientRect().top < -4) { allerA(i); return; }
+        allerA(i + sens);
+      };
+      var syncClasse = function () {
+        document.documentElement.classList.toggle('etapes-guidees', grandEcran.matches);
+      };
+      syncClasse();
+      if (grandEcran.addEventListener) grandEcran.addEventListener('change', syncClasse);
+
+      window.addEventListener('wheel', function (e) {
+        if (!grandEcran.matches || e.ctrlKey) return;
+        var sens = e.deltaY > 0 ? 1 : -1;
+        if (libre(sens)) return;
+        e.preventDefault();
+        if (verrou) return;
+        cumul += e.deltaY;
+        if (Math.abs(cumul) < 30) return;
+        guider(sens, e);
+      }, { passive: false });
+
+      window.addEventListener('keydown', function (e) {
+        if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
+        var touches = { PageDown: 1, ArrowDown: 1, ' ': 1, PageUp: -1, ArrowUp: -1 };
+        if (e.key === ' ' && e.shiftKey) touches[' '] = -1;
+        var sens = touches[e.key];
+        if (sens) guider(sens, e);
+      });
+    }
+
+    // Légère profondeur sur les fleurs d'ouverture
+    var fleurs = document.querySelectorAll('.fleurs');
+    if (fleurs.length) {
+      var enAttente = false;
+      window.addEventListener('scroll', function () {
+        if (enAttente) return;
+        enAttente = true;
+        requestAnimationFrame(function () {
+          var y = Math.min(window.scrollY, 900);
+          fleurs[0].style.translate = '0 ' + (-y * 0.18) + 'px';
+          if (fleurs[1]) fleurs[1].style.translate = '0 ' + (y * 0.12) + 'px';
+          enAttente = false;
+        });
+      }, { passive: true });
+    }
+  }
+
   /* ---------- Réponse ---------- */
   var formReponse = document.getElementById('formulaire-reponse');
   if (formReponse) {

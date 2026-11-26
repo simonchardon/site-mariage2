@@ -14,7 +14,7 @@
 <body>
 
   <!-- Première étape : le titre seul entre les fleurs -->
-  <div class="ouverture">
+  <div class="ouverture" id="accueil" data-etape="Accueil">
     <img class="fleurs fleurs-haut" src="assets/images/fleurs-haut-gauche.webp" alt="" width="900" height="883">
     <img class="fleurs fleurs-bas" src="assets/images/fleurs-bas-droite.webp" alt="" width="850" height="870">
 
@@ -38,7 +38,7 @@
 
   <main>
     <!-- Chers invités -->
-    <section id="invites" class="section invites">
+    <section id="invites" class="section invites etape-ecran" data-etape="Chers invités">
       <div class="contenu-etroit">
         <h2 class="titre-m">Chers invités,</h2>
         <div class="texte-empile">
@@ -52,7 +52,7 @@
     </section>
 
     <!-- Le lieu -->
-    <section class="section lieu" aria-labelledby="titre-lieu">
+    <section id="lieu" class="section lieu etape-ecran" data-etape="Le lieu" aria-labelledby="titre-lieu">
       <img class="guirlande" src="assets/images/guirlande.webp" alt="" width="500" height="294" loading="lazy">
       <p class="surtitre">Le lieu</p>
       <h2 id="titre-lieu" class="titre-m">Petit Château de Seicheprey</h2>
@@ -61,7 +61,7 @@
     </section>
 
     <!-- Notre histoire -->
-    <section class="section histoire" aria-labelledby="titre-histoire">
+    <section id="histoire" class="section histoire etape-ecran" data-etape="Notre histoire" aria-labelledby="titre-histoire">
       <div class="voile voile-peche" aria-hidden="true"></div>
       <div class="contenu-large histoire-grille">
         <div class="histoire-photo">
@@ -81,7 +81,7 @@
     </section>
 
     <!-- Déroulement -->
-    <section class="section deroulement" aria-labelledby="titre-deroulement">
+    <section id="deroulement" class="section deroulement etape-ecran" data-etape="Déroulement" aria-labelledby="titre-deroulement">
       <div class="contenu-large">
         <p class="surtitre">Le 25 septembre</p>
         <h2 id="titre-deroulement" class="titre-l">Déroulement de la journée</h2>
@@ -111,7 +111,7 @@
     </section>
 
     <!-- Dress code -->
-    <section class="section dress-code" aria-labelledby="titre-dress-code">
+    <section id="dress-code" class="section dress-code etape-ecran" data-etape="Dress code" aria-labelledby="titre-dress-code">
       <div class="voile voile-jaune" aria-hidden="true"></div>
       <div class="contenu-etroit">
         <h2 id="titre-dress-code" class="titre-l">Dress code</h2>
@@ -127,7 +127,7 @@
     </section>
 
     <!-- Votre présence -->
-    <section class="section presence" aria-labelledby="titre-presence">
+    <section id="presence" class="section presence etape-ecran" data-etape="Votre présence" aria-labelledby="titre-presence">
       <div class="contenu-etroit">
         <img class="guirlande" src="assets/images/guirlande.webp" alt="" width="500" height="294" loading="lazy">
         <h2 id="titre-presence" class="titre-m">Votre présence nous tient à cœur</h2>
@@ -139,7 +139,7 @@
     </section>
 
     <!-- Infos pratiques -->
-    <section class="section infos" aria-labelledby="titre-infos">
+    <section id="infos" class="section infos etape-ecran" data-etape="Infos pratiques" aria-labelledby="titre-infos">
       <div class="contenu-large">
         <h2 id="titre-infos" class="titre-l">Infos pratiques</h2>
         <div class="grille-3">
@@ -161,7 +161,7 @@
     </section>
 
     <!-- Contact -->
-    <section class="section contact" aria-labelledby="titre-contact">
+    <section id="contact" class="section contact etape-ecran" data-etape="Contact" aria-labelledby="titre-contact">
       <h2 id="titre-contact" class="titre-l">Contact</h2>
       <p class="intro">Une question ou un imprévu ? N'hésitez pas à nous contacter.</p>
       <div class="grille-3">
@@ -190,5 +190,6 @@
     <p class="pied-date">25 · 09 · 2027</p>
   </footer>
 
+  <script src="js/main.js"></script>
 </body>
 </html>
