@@ -102,26 +102,32 @@
     if (etapes.length > 1) {
       var verrou = false;
       var cumul = 0;
-      var indexCourant = function () {
-        var milieu = window.innerHeight / 2;
-        var courant = 0;
-        etapes.forEach(function (e, i) { if (e.getBoundingClientRect().top <= milieu) courant = i; });
-        return courant;
+      var dernierEvenement = 0;
+      // Étape qui occupe le haut de l'écran
+      var etapeEnHaut = function () {
+        var courante = etapes[0];
+        etapes.forEach(function (e) { if (e.getBoundingClientRect().top <= 4) courante = e; });
+        return courante;
       };
-      var allerA = function (i) {
-        var cible = i >= etapes.length ? document.querySelector('.pied') : etapes[Math.max(0, i)];
-        if (!cible) return;
+      var allerVers = function (y) {
         verrou = true;
-        var y = i >= etapes.length
-          ? document.documentElement.scrollHeight
-          : cible.getBoundingClientRect().top + window.scrollY;
+        var debut = Date.now();
         window.scrollTo({ top: y, behavior: 'smooth' });
-        setTimeout(function () { verrou = false; cumul = 0; }, 950);
+        // On attend la fin du glissement ET la fin de l'inertie du pavé tactile
+        var liberer = function () {
+          if (Date.now() - debut > 900 && Date.now() - dernierEvenement > 220) {
+            verrou = false;
+            cumul = 0;
+          } else {
+            setTimeout(liberer, 60);
+          }
+        };
+        setTimeout(liberer, 900);
       };
       // Laisse défiler librement à l'intérieur d'une étape plus haute que l'écran
       var libre = function (sens) {
-        var e = etapes[indexCourant()];
-        var r = e.getBoundingClientRect();
+        var r = etapeEnHaut().getBoundingClientRect();
+        if (r.height <= window.innerHeight + 8) return false;
         return sens > 0 ? r.bottom > window.innerHeight + 4 : r.top < -4;
       };
       var guider = function (sens, evenement) {
@@ -129,10 +135,18 @@
         if (libre(sens)) return;
         evenement.preventDefault();
         if (verrou) return;
-        var i = indexCourant();
-        // Dans le pied de page, on remonte vers la dernière étape
-        if (sens < 0 && etapes[i].getBoundingClientRect().top < -4) { allerA(i); return; }
-        allerA(i + sens);
+        var cible = null;
+        if (sens > 0) {
+          // Première étape encore sous le haut de l'écran
+          etapes.forEach(function (e) { if (!cible && e.getBoundingClientRect().top > 4) cible = e; });
+          allerVers(cible
+            ? cible.getBoundingClientRect().top + window.scrollY
+            : document.documentElement.scrollHeight);
+        } else {
+          // Dernière étape déjà passée au-dessus du haut de l'écran
+          etapes.forEach(function (e) { if (e.getBoundingClientRect().top < -4) cible = e; });
+          if (cible) allerVers(cible.getBoundingClientRect().top + window.scrollY);
+        }
       };
       var syncClasse = function () {
         document.documentElement.classList.toggle('etapes-guidees', grandEcran.matches);
@@ -143,9 +157,10 @@
       window.addEventListener('wheel', function (e) {
         if (!grandEcran.matches || e.ctrlKey) return;
         var sens = e.deltaY > 0 ? 1 : -1;
+        dernierEvenement = Date.now();
+        if (verrou) { e.preventDefault(); return; }
         if (libre(sens)) return;
         e.preventDefault();
-        if (verrou) return;
         cumul += e.deltaY;
         if (Math.abs(cumul) < 30) return;
         guider(sens, e);
