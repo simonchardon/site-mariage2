@@ -9,8 +9,18 @@
   if (location.hash) history.replaceState(null, '', location.pathname + location.search);
   var auDebut = function () { window.scrollTo({ top: 0, behavior: 'instant' }); };
   auDebut();
-  window.addEventListener('load', auDebut);
-  window.addEventListener('pageshow', function (e) { if (e.persisted) auDebut(); });
+  document.addEventListener('DOMContentLoaded', auDebut);
+  window.addEventListener('load', function () {
+    auDebut();
+    // Certains navigateurs (et l'aperçu intégré) restaurent la position juste après le chargement
+    requestAnimationFrame(auDebut);
+    setTimeout(auDebut, 60);
+    setTimeout(auDebut, 250);
+  });
+  window.addEventListener('pageshow', auDebut);
+  // En quittant ou rechargeant, on remonte d'abord : aucune position n'est mémorisée
+  window.addEventListener('beforeunload', auDebut);
+  window.addEventListener('pagehide', auDebut);
 
   // Liens internes (« Faites défiler », repères) : on défile sans ajouter d'ancre à l'adresse
   document.addEventListener('click', function (e) {
