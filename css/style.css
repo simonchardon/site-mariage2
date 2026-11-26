@@ -621,7 +621,6 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .histoire { text-align: center; }
   .colonne-recherche h1, .colonne-recherche .intro { text-align: center; margin-left: auto; margin-right: auto; }
 }
-}
 
 /* ==========================================================================
    Animations et étapes au défilement
