@@ -677,7 +677,6 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
       overflow-x: hidden;
       overflow-y: auto;
       overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
       transform: translate3d(0, calc(var(--decalage, 0) * (100% + 80px)), 0);
       transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
     }
@@ -906,4 +905,33 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   .entete-accueil .logo { transition: opacity 0.5s ease; }
   .entete-accueil.discret:not(.ouvert) { background-color: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .entete-accueil.discret:not(.ouvert) .logo { opacity: 0; pointer-events: none; }
+}
+
+/* Logo : initiales manuscrites, esperluette olive */
+.logo {
+  font-family: var(--manuscrit);
+  font-size: 34px;
+  font-size-adjust: 0.31;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.logo span { font-style: normal; color: var(--olive); }
+
+@media (max-width: 899px) {
+  /* Safari iOS peut peindre les zones défilantes par-dessus un en-tête collant :
+     en mode étapes, l'en-tête est fixé et placé sur son propre plan, au-dessus des écrans */
+  html.etapes-mobile .entete {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  html.etapes-mobile .page-etape { z-index: 1; }
+  html.etapes-mobile .entete { z-index: 100; }
+  .burger { -webkit-appearance: none; appearance: none; align-items: center; }
+  .burger span { width: 24px; height: 1.5px; flex: none; border-radius: 1px; }
+  .entete.ouvert .burger span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+  .entete.ouvert .burger span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 }
