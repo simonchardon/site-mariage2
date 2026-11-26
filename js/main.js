@@ -193,7 +193,7 @@
     if (fleurs.length) {
       var enAttente = false;
       window.addEventListener('scroll', function () {
-        if (enAttente) return;
+        if (enAttente || !grandEcran.matches) return;
         enAttente = true;
         requestAnimationFrame(function () {
           var y = Math.min(window.scrollY, 900);

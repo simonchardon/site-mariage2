@@ -29,7 +29,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
@@ -41,6 +41,7 @@ body {
   font-size: 17px;
   line-height: 1.75;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 [hidden] { display: none !important; }
@@ -342,7 +343,7 @@ h3 { margin: 0; }
 .deroulement .italique { margin-top: 48px; color: var(--discret); }
 
 /* Dress code */
-.dress-code { padding-top: clamp(64px, 9vw, 112px); padding-bottom: clamp(64px, 9vw, 112px); }
+.dress-code { overflow: hidden; padding-top: clamp(64px, 9vw, 112px); padding-bottom: clamp(64px, 9vw, 112px); }
 .dress-code .voile { left: 50%; top: 50%; width: min(820px, 130vw); height: 100%; transform: translate(-50%, -50%); }
 .dress-code .surtitre { margin-top: 14px; }
 .couleurs {
@@ -604,18 +605,22 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
 /* ---------- Petits écrans ---------- */
 
 @media (max-width: 600px) {
-  .entete { justify-content: center; }
-  .entete-accueil { justify-content: flex-end; padding-top: 16px; }
-  .entete-accueil .nav a[aria-current="page"] { display: none; }
+  /* Même en-tête partout : logo à gauche, musiques et réponse à droite */
+  .entete { flex-wrap: nowrap; padding-top: 16px; padding-bottom: 16px; }
+  .entete-accueil { justify-content: flex-end; }
+  .nav { flex-wrap: nowrap; gap: 4px 18px; letter-spacing: 0.16em; font-size: 12px; }
+  .nav a[href="index.html"] { display: none; }
+  .nav .nav-reponse { padding: 10px 16px; }
   .fleurs-haut { width: 118px; }
-  .entete-accueil .nav { gap: 4px 18px; }
   .fleurs-bas { width: 170px; }
-  .entete .logo { width: 100%; text-align: center; }
-  .nav { justify-content: center; gap: 4px 22px; letter-spacing: 0.18em; }
   .ouverture { min-height: 560px; }
   .defiler { margin-top: 40px; }
   .etape { padding: 0; }
+  .etapes { gap: 40px; }
+  .etape + .etape { padding-top: 40px; box-shadow: 0 -1px 0 var(--filet); }
   .histoire { text-align: center; }
+  .colonne-recherche h1, .colonne-recherche .intro { text-align: center; margin-left: auto; margin-right: auto; }
+}
 }
 
 /* ==========================================================================
@@ -626,13 +631,9 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
 @media (prefers-reduced-motion: no-preference) {
 
   /* ---------- Étapes : une section = un écran ---------- */
-  html.etapes-actives { scroll-snap-type: y proximity; scroll-behavior: smooth; }
-  .etapes-actives .ouverture,
-  .etapes-actives .etape-ecran { scroll-snap-align: start; }
-  .etapes-actives .pied { scroll-snap-align: end; }
+  /* Mobile : défilement naturel du téléphone (pas d'aimantation), les étapes sont guidées sur ordinateur seulement */
 
   @media (min-width: 900px) and (min-height: 640px) {
-    html.etapes-actives.etapes-guidees { scroll-snap-type: none; }
     .etapes-actives .etape-ecran {
       min-height: 100vh;
       min-height: 100svh;
@@ -698,12 +699,7 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
     transition: opacity 0.3s, transform 0.3s;
   }
   .reperes a:hover span, .reperes a:focus-visible span { opacity: 1; transform: translate(0, -50%); }
-  @media (max-width: 600px) {
-    .reperes { right: 6px; gap: 8px; }
-    .reperes a { width: 16px; height: 16px; }
-    .reperes a::before { inset: 5px; }
-    .reperes span { display: none; }
-  }
+  @media (max-width: 899px) { .reperes { display: none; } }
 
   /* ---------- Ouverture ---------- */
   .anime .fleurs-haut { transform-origin: 0 0; animation: eclore 1.8s cubic-bezier(.2,.7,.2,1) both, balancer-h 9s ease-in-out 1.8s infinite; }
@@ -791,4 +787,13 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
   /* Listes de la page musiques */
   .liste li { animation: monter 0.45s cubic-bezier(.2,.7,.2,1) both; }
   tbody tr { animation: apparaitre 0.6s ease both; }
+}
+
+/* Très petits écrans (iPhone SE…) */
+.logo, .nav a { white-space: nowrap; }
+@media (max-width: 360px) {
+  .entete { padding-left: 16px; padding-right: 16px; gap: 12px; }
+  .nav { gap: 4px 12px; font-size: 11px; letter-spacing: 0.1em; }
+  .nav .nav-reponse { padding: 9px 12px; }
+  .fleurs-haut { width: 92px; }
 }
