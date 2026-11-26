@@ -211,45 +211,82 @@
         guider(sens, e);
       }, { passive: false });
 
-      // Mobile : défilement libre dans une section, aimantation douce entre deux sections
-      var doigt = false;
-      var yPrecedent = window.scrollY;
-      var sensDefilement = 1;
-      var minuterie = null;
-      var aimanter = function () {
-        if (grandEcran.matches || doigt || glissement) return;
+      // Mobile : le doigt défile librement dans une section, s'arrête net à sa limite,
+      // et un nouveau geste depuis cette limite fait glisser vers l'étape voisine
+      var placer = function (y) { window.scrollTo({ top: y, behavior: 'instant' }); };
+      var bornesDe = function (section) {
         var h = window.innerHeight;
+        var haut = section.getBoundingClientRect().top + window.scrollY;
+        var bas = section === etapes[etapes.length - 1]
+          ? document.documentElement.scrollHeight - h
+          : haut + section.offsetHeight - h;
+        return { min: haut, max: Math.max(haut, bas) };
+      };
+      var toucher = null;
+      var elan = 0; // identifiant de l'élan en cours (0 = aucun)
+      window.addEventListener('touchstart', function (e) {
+        if (grandEcran.matches || e.touches.length > 1) { toucher = null; return; }
+        elan = 0;
+        if (glissement) { toucher = { bloque: true }; return; }
+        var section = etapeEnHaut();
         var y = window.scrollY;
-        var sens = sensDefilement;
-        for (var i = 1; i < etapes.length; i++) {
-          var b = etapes[i].getBoundingClientRect().top;
-          if (b <= 2 || b >= h - 2) continue;
-          // Une frontière de section est visible : on choisit l'une des deux sections
-          var precedente = etapes[i - 1].getBoundingClientRect();
-          var finPrecedente = precedente.height > h + 2 ? y + b - h : y + precedente.top;
-          var versSuivante = sens > 0 ? b < h * 0.8 : b < h * 0.2;
-          allerVers(versSuivante ? y + b : finPrecedente, 650);
+        var bornes = bornesDe(section);
+        toucher = {
+          section: section, bornes: bornes, doigt0: e.touches[0].clientY, y0: y,
+          enHaut: y <= bornes.min + 3, enBas: y >= bornes.max - 3,
+          depasse: 0, traces: [{ t: Date.now(), y: y }]
+        };
+      }, { passive: true });
+      window.addEventListener('touchmove', function (e) {
+        if (!toucher || e.touches.length > 1) return;
+        e.preventDefault();
+        if (toucher.bloque) return;
+        var voulu = toucher.y0 - (e.touches[0].clientY - toucher.doigt0);
+        var y = Math.min(toucher.bornes.max, Math.max(toucher.bornes.min, voulu));
+        toucher.depasse = voulu - y;
+        placer(y);
+        toucher.traces.push({ t: Date.now(), y: voulu });
+        if (toucher.traces.length > 6) toucher.traces.shift();
+      }, { passive: false });
+      var finToucher = function () {
+        var g = toucher;
+        toucher = null;
+        if (!g || g.bloque) return;
+        // Vitesse du doigt sur les derniers instants (px/ms, positive vers le bas de la page)
+        var tr = g.traces, v = 0;
+        if (tr.length > 1 && Date.now() - tr[tr.length - 1].t < 100) {
+          var a = tr[0], b = tr[tr.length - 1];
+          v = (b.y - a.y) / Math.max(16, b.t - a.t);
+        }
+        var i = Array.prototype.indexOf.call(etapes, g.section);
+        // Geste parti de la limite de la section et qui pousse au-delà : étape voisine
+        var versBas = g.enBas && (g.depasse > 50 || (g.depasse > 8 && v > 0.35));
+        var versHaut = g.enHaut && (g.depasse < -50 || (g.depasse < -8 && v < -0.35));
+        if (versBas && i < etapes.length - 1) {
+          allerVers(bornesDe(etapes[i + 1]).min, 900);
           return;
         }
+        if (versHaut && i > 0) {
+          allerVers(bornesDe(etapes[i - 1]).max, 900);
+          return;
+        }
+        // Sinon, élan naturel, qui s'arrête à la limite de la section
+        if (Math.abs(v) < 0.1) return;
+        var id = ++elan;
+        var vitesse = v * 16;
+        var avancer = function () {
+          if (id !== elan) return;
+          var y = window.scrollY + vitesse;
+          var borne = Math.min(g.bornes.max, Math.max(g.bornes.min, y));
+          placer(borne);
+          vitesse *= 0.95;
+          if (borne !== y || Math.abs(vitesse) < 0.5) { elan = 0; return; }
+          requestAnimationFrame(avancer);
+        };
+        requestAnimationFrame(avancer);
       };
-      window.addEventListener('touchstart', function () {
-        doigt = true;
-        glissement = 0; // le doigt reprend la main
-        verrou = false;
-      }, { passive: true });
-      window.addEventListener('touchend', function () {
-        doigt = false;
-        clearTimeout(minuterie);
-        minuterie = setTimeout(aimanter, 160);
-      }, { passive: true });
-      window.addEventListener('scroll', function () {
-        var y = window.scrollY;
-        if (!glissement && Math.abs(y - yPrecedent) > 1) sensDefilement = y > yPrecedent ? 1 : -1;
-        yPrecedent = y;
-        if (glissement || doigt) return;
-        clearTimeout(minuterie);
-        minuterie = setTimeout(aimanter, 160);
-      }, { passive: true });
+      window.addEventListener('touchend', finToucher, { passive: true });
+      window.addEventListener('touchcancel', finToucher, { passive: true });
 
       window.addEventListener('keydown', function (e) {
         if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
