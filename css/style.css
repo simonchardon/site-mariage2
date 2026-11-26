@@ -668,7 +668,7 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
      saute jamais une section (scroll-snap-stop). */
   @media (max-width: 899px), (max-height: 639px) {
     html.etapes-actives { scroll-snap-type: y mandatory; }
-    .etapes-actives .etape-ecran { scroll-snap-align: start; scroll-snap-stop: always; }
+    .etapes-actives .etape-ecran, .etapes-actives .ouverture { scroll-snap-align: start; scroll-snap-stop: always; }
     .etapes-actives .pied { scroll-snap-align: end; }
   }
 
