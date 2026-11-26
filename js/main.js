@@ -112,17 +112,27 @@
       var allerVers = function (y) {
         verrou = true;
         var debut = Date.now();
-        window.scrollTo({ top: y, behavior: 'smooth' });
+        var depart = window.scrollY;
+        var distance = y - depart;
+        var duree = 1400;
+        // Glissement lent, accéléré puis freiné (easeInOutCubic)
+        var glisser = function () {
+          var t = Math.min(1, (Date.now() - debut) / duree);
+          var e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+          window.scrollTo({ top: depart + distance * e, behavior: 'instant' });
+          if (t < 1) requestAnimationFrame(glisser);
+        };
+        requestAnimationFrame(glisser);
         // On attend la fin du glissement ET la fin de l'inertie du pavé tactile
         var liberer = function () {
-          if (Date.now() - debut > 900 && Date.now() - dernierEvenement > 220) {
+          if (Date.now() - debut > duree + 100 && Date.now() - dernierEvenement > 220) {
             verrou = false;
             cumul = 0;
           } else {
             setTimeout(liberer, 60);
           }
         };
-        setTimeout(liberer, 900);
+        setTimeout(liberer, duree);
       };
       // Laisse défiler librement à l'intérieur d'une étape plus haute que l'écran
       var libre = function (sens) {
