@@ -4,6 +4,14 @@
 (function () {
   'use strict';
 
+  /* ---------- Rechargement : on repart toujours du début (sauf lien vers une section) ---------- */
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (!location.hash) {
+    window.scrollTo(0, 0);
+    window.addEventListener('load', function () { window.scrollTo(0, 0); });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) window.scrollTo(0, 0); });
+  }
+
   /* ---------- Animations ---------- */
   var animations = !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
     'IntersectionObserver' in window;
