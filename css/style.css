@@ -663,13 +663,32 @@ td.par { font-family: var(--serif); font-style: italic; font-size: 18px; }
     .etapes-actives .etape-ecran > .contenu-large, .etapes-actives .etape-ecran > .contenu-etroit, .etapes-actives .etape-ecran > .grille-3 { width: 100%; }
   }
 
-  /* Mobile : défilement natif du téléphone, aimanté au début de chaque section.
-     Une section plus haute que l'écran se parcourt librement, et un lancer ne
-     saute jamais une section (scroll-snap-stop). */
+  /* Mobile : chaque section devient un écran à part, empilé hors champ.
+     On passe d'un écran à l'autre par un geste ; une section plus haute que
+     l'écran défile librement à l'intérieur, sans jamais laisser voir ses voisines. */
   @media (max-width: 899px), (max-height: 639px) {
-    html.etapes-actives { scroll-snap-type: y mandatory; }
-    .etapes-actives .etape-ecran, .etapes-actives .ouverture { scroll-snap-align: start; scroll-snap-stop: always; }
-    .etapes-actives .pied { scroll-snap-align: end; }
+    html.etapes-mobile, html.etapes-mobile body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+    html.etapes-mobile body { position: fixed; inset: 0; }
+    html.etapes-mobile .page-etape {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      transform: translate3d(0, calc(var(--decalage, 0) * (100% + 80px)), 0);
+      transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    html.etapes-mobile.sans-transition .page-etape { transition: none; }
+    html.etapes-mobile .etape-ecran.page-etape {
+      justify-content: safe center;
+      padding-top: 56px;
+      padding-bottom: 72px;
+    }
+    html.etapes-mobile .lieu.page-etape { padding-top: 32px; padding-bottom: 40px; }
+    html.etapes-mobile .page-etape > .pied { margin-top: 32px; padding-bottom: 0; }
   }
 
   /* ---------- Repères latéraux ---------- */

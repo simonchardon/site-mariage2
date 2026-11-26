@@ -211,7 +211,105 @@
         guider(sens, e);
       }, { passive: false });
 
-      // Mobile : défilement natif, aimanté aux sections par le CSS (scroll-snap)
+      // Mobile : un écran par section, un geste depuis le bord d'une section = étape voisine.
+      // Une section plus haute que l'écran défile nativement à l'intérieur et s'arrête à son bord.
+      var racine = document.documentElement;
+      var pied = document.querySelector('.pied');
+      var principal = document.querySelector('main');
+      var derniere = etapes[etapes.length - 1];
+      var modeMobile = false;
+      var courante = 0;
+      var enTransition = false;
+      var poser = function () {
+        etapes.forEach(function (e, n) {
+          e.style.setProperty('--decalage', n - courante);
+          e.toggleAttribute('inert', n !== courante);
+        });
+      };
+      var allerPage = function (n) {
+        n = Math.max(0, Math.min(etapes.length - 1, n));
+        if (n === courante) return;
+        var page = etapes[n];
+        // En remontant vers une section haute, on arrive sur sa fin
+        page.scrollTop = n < courante ? page.scrollHeight : 0;
+        courante = n;
+        enTransition = true;
+        poser();
+        setTimeout(function () { enTransition = false; }, 900);
+      };
+      var activerMobile = function () {
+        var m = !grandEcran.matches;
+        if (m === modeMobile) return;
+        modeMobile = m;
+        racine.classList.add('sans-transition');
+        racine.classList.toggle('etapes-mobile', m);
+        etapes.forEach(function (e) {
+          e.classList.toggle('page-etape', m);
+          e.scrollTop = 0;
+          if (!m) { e.style.removeProperty('--decalage'); e.removeAttribute('inert'); }
+        });
+        courante = 0;
+        if (m) { if (pied) derniere.appendChild(pied); poser(); }
+        else if (pied && principal) principal.after(pied);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { racine.classList.remove('sans-transition'); });
+        });
+      };
+      activerMobile();
+      if (grandEcran.addEventListener) grandEcran.addEventListener('change', activerMobile);
+
+      var geste = null;
+      document.addEventListener('touchstart', function (e) {
+        if (!modeMobile || e.touches.length > 1) { geste = null; return; }
+        var p = etapes[courante];
+        geste = {
+          y: e.touches[0].clientY, t: Date.now(), dy: 0, passage: null,
+          haut: p.scrollTop <= 1,
+          bas: p.scrollTop + p.clientHeight >= p.scrollHeight - 1
+        };
+      }, { passive: true });
+      document.addEventListener('touchmove', function (e) {
+        if (!geste || e.touches.length > 1) return;
+        if (enTransition) { if (e.cancelable) e.preventDefault(); return; }
+        var dy = e.touches[0].clientY - geste.y;
+        if (geste.passage === null) {
+          if (Math.abs(dy) < 6) return;
+          // Le geste part du bord de la section et pousse vers l'extérieur : c'est un passage d'étape
+          geste.passage = (dy < 0 && geste.bas) || (dy > 0 && geste.haut);
+        }
+        if (geste.passage) {
+          if (e.cancelable) e.preventDefault();
+          geste.dy = dy;
+        }
+      }, { passive: false });
+      var finGeste = function () {
+        var g = geste;
+        geste = null;
+        if (!g || !g.passage || enTransition) return;
+        var vitesse = Math.abs(g.dy) / Math.max(1, Date.now() - g.t);
+        if (Math.abs(g.dy) > 50 || (Math.abs(g.dy) > 20 && vitesse > 0.3)) allerPage(courante + (g.dy < 0 ? 1 : -1));
+      };
+      document.addEventListener('touchend', finGeste, { passive: true });
+      document.addEventListener('touchcancel', function () { geste = null; }, { passive: true });
+      // Liens internes et focus clavier : on change d'écran au lieu de défiler
+      document.addEventListener('click', function (e) {
+        if (!modeMobile) return;
+        var lien = e.target.closest && e.target.closest('a[href^="#"]');
+        if (!lien) return;
+        var cible = document.getElementById(lien.getAttribute('href').slice(1));
+        var page = cible && cible.closest('.page-etape');
+        if (!page) return;
+        e.preventDefault();
+        e.stopPropagation();
+        allerPage(Array.prototype.indexOf.call(etapes, page));
+      }, true);
+      document.addEventListener('focusin', function (e) {
+        if (!modeMobile) return;
+        var page = e.target.closest && e.target.closest('.page-etape');
+        if (page) allerPage(Array.prototype.indexOf.call(etapes, page));
+        document.body.scrollTop = 0;
+      });
 
       window.addEventListener('keydown', function (e) {
         if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
