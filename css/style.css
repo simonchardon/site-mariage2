@@ -397,9 +397,6 @@ h3 { margin: 0; }
 }
 /* Pages intérieures : branches fixées en haut de page */
 .page > .fleurs-cote { top: 96px; height: min(80vh, 820px); }
-.infos .fleurs-cote { top: 12%; height: 76%; }
-.infos .fleurs-cote-gauche { left: clamp(-60px, -1vw, 0px); }
-.infos .fleurs-cote-droite { right: clamp(-60px, -1vw, 0px); }
 /* Bouquets dans les coins (une section sur deux, comme l'accueil) */
 .fleurs-coin { position: absolute; height: clamp(200px, 38vh, 380px); width: auto; max-width: none; pointer-events: none; }
 .fleurs-coin-haut { left: 0; top: 0; }
