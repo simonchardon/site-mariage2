@@ -282,7 +282,7 @@ h3 { margin: 0; }
 /* ---------- Sections de l'accueil ---------- */
 
 .section { position: relative; padding: clamp(72px, 10vw, 128px) clamp(20px, 5vw, 40px); text-align: center; }
-.section > :not(.voile):not(.fleurs-cote) { position: relative; }
+.section > :not(.voile):not(.fleurs-cote):not(.fleurs-coin) { position: relative; }
 .contenu-etroit { max-width: 680px; margin: 0 auto; }
 .contenu-large { max-width: 1080px; margin: 0 auto; }
 
@@ -400,7 +400,15 @@ h3 { margin: 0; }
 .infos .fleurs-cote { top: 12%; height: 76%; }
 .infos .fleurs-cote-gauche { left: clamp(-60px, -1vw, 0px); }
 .infos .fleurs-cote-droite { right: clamp(-60px, -1vw, 0px); }
+/* Bouquets dans les coins (une section sur deux, comme l'accueil) */
+.fleurs-coin { position: absolute; width: clamp(170px, 19vw, 290px); height: auto; max-width: none; pointer-events: none; }
+.fleurs-coin-haut { left: 0; top: 0; }
+.fleurs-coin-bas { right: 0; bottom: 0; }
+.page > .fleurs-coin-haut { top: 64px; }
 @media (max-width: 899px) {
+  .fleurs-coin { width: 100px; opacity: 0.6; }
+  .page > .fleurs-coin-haut { top: 58px; }
+  .fleurs-coin-haut { top: 58px; }
   .fleurs-cote { top: 10%; height: 80%; opacity: 0.55; }
   .fleurs-cote-gauche { left: auto; right: calc(100% - 46px); }
   .fleurs-cote-droite { right: auto; left: calc(100% - 46px); }
