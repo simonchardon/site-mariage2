@@ -368,7 +368,7 @@ h3 { margin: 0; }
 .presence .intro { margin: 20px auto 36px; max-width: 480px; color: var(--discret); }
 
 /* Infos pratiques */
-.infos { border-top: 1px solid var(--filet); border-bottom: 1px solid var(--filet); padding-top: clamp(64px, 9vw, 112px); padding-bottom: clamp(64px, 9vw, 112px); }
+.infos { padding-top: clamp(64px, 9vw, 112px); padding-bottom: clamp(64px, 9vw, 112px); }
 .infos h2 { margin-bottom: 48px; }
 .infos { position: relative; overflow: hidden; }
 /* Branches fleuries le long des côtés (chers invités, infos pratiques, contact) */
