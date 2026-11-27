@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Votre réponse — Maëlle &amp; Raphaël</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&amp;family=Jost:wght@300;400;500&amp;display=swap">
+  <link rel="preload" href="assets/fonts/milton-two.otf" as="font" type="font/otf" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=36">
+</head>
+<body>
+<div class="page page-reponse">
+  <div class="voile voile-peche" aria-hidden="true"></div>
+  <div class="voile voile-jaune" aria-hidden="true"></div>
+  <img class="fleurs-cote fleurs-cote-gauche" src="assets/images/fleurs-cote-eglantines-rose.webp" alt="" width="440" height="2094">
+  <img class="fleurs-cote fleurs-cote-droite" src="assets/images/fleurs-cote-eglantines-rose.webp" alt="" width="440" height="2094">
+
+  <header class="entete">
+    <a class="logo" href="index.html" aria-label="Accueil — Maëlle et Raphaël">M <span>&amp;</span> R</a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="menu" aria-label="Navigation principale">
+      <a href="index.html">Accueil</a>
+      <a href="musiques.html">Vos musiques</a>
+      <a class="nav-reponse" href="rsvp.html" aria-current="page">Réponse</a>
+    </nav>
+  </header>
+
+  <main class="page-contenu">
+    <div class="entete-page">
+      <h1>Votre réponse</h1>
+      <p style="margin-top: 18px">Merci de nous répondre</p>
+      <p class="rappel">avant le 1er août 2027</p>
+      <p class="italique discret" style="margin-top: 14px; font-size: 20px">Une réponse par foyer suffit.</p>
+    </div>
+
+    <form class="formulaire" id="formulaire-reponse" action="merci-oui.html" novalidate>
+      <div class="champ">
+        <label for="nom">Nom &amp; prénom</label>
+        <input id="nom" name="nom" type="text" placeholder="Ex. Famille Dupont" autocomplete="name" required>
+      </div>
+
+      <fieldset class="champ">
+        <legend>Serez-vous présent·e·s ?</legend>
+        <div class="choix">
+          <button type="button" data-presence="oui" aria-pressed="true">Avec joie !</button>
+          <button type="button" data-presence="non" aria-pressed="false">Malheureusement non</button>
+        </div>
+      </fieldset>
+
+      <div class="details" id="details-presence">
+        <div class="compteurs">
+          <div class="compteur" data-compteur data-min="1" data-max="10">
+            <span id="libelle-adultes">Adultes</span>
+            <div class="compteur-boutons">
+              <button type="button" data-pas="-1" aria-label="Retirer un adulte">−</button>
+              <output aria-live="polite" aria-labelledby="libelle-adultes">1</output>
+              <button type="button" data-pas="1" aria-label="Ajouter un adulte">+</button>
+            </div>
+            <input type="hidden" name="adultes" value="1">
+          </div>
+          <div class="compteur" data-compteur data-min="0" data-max="10">
+            <span id="libelle-enfants">Enfants<br><small>moins de 12 ans</small></span>
+            <div class="compteur-boutons">
+              <button type="button" data-pas="-1" aria-label="Retirer un enfant">−</button>
+              <output aria-live="polite" aria-labelledby="libelle-enfants">0</output>
+              <button type="button" data-pas="1" aria-label="Ajouter un enfant">+</button>
+            </div>
+            <input type="hidden" name="enfants" value="0">
+          </div>
+        </div>
+        <div class="champ">
+          <label for="restrictions">Restrictions alimentaires</label>
+          <p id="aide-restrictions" class="aide">Allergies, végétarien, sans gluten… Précisez pour qui si besoin.</p>
+          <textarea id="restrictions" name="restrictions" placeholder="Rien à signaler" aria-describedby="aide-restrictions"></textarea>
+        </div>
+      </div>
+
+      <div class="envoi">
+        <button class="bouton" type="submit">Envoyer ma réponse</button>
+        <a class="lien-retour" href="index.html">← Retour au site</a>
+      </div>
+    </form>
+  </main>
+</div>
+<script src="js/main.js?v=36"></script>
+</body>
+</html>
