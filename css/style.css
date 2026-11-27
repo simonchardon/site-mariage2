@@ -405,21 +405,27 @@ h3 { margin: 0; }
 .fleurs-coin-haut { left: 0; top: 0; }
 .fleurs-coin-bas { right: 0; bottom: 0; }
 .page > .fleurs-coin-haut { top: 64px; }
-.fleurs-mobile { display: none; }
 .pied { position: relative; }
 .fleurs-pied { z-index: 0; }
 .pied > :not(.fleurs-coin) { position: relative; z-index: 1; }
 /* Mobile : pas de branches latérales (trop étroit), des coins arrondis partout,
    et une marge latérale pour que le texte ne passe pas sur les fleurs */
 @media (max-width: 899px) {
-  .fleurs-cote { display: none; }
-  .fleurs-mobile { display: block; }
+  .fleurs-cote { top: 10%; height: 80%; opacity: 0.55; }
+  .fleurs-cote-gauche { left: auto; right: calc(100% - 46px); }
+  .fleurs-cote-droite { right: auto; left: calc(100% - 46px); }
   .fleurs-coin { width: 118px; height: auto; opacity: 1; }
   .fleurs-coin-haut, .page > .fleurs-coin-haut { top: 69px; }
   .section, .page-contenu { padding-left: 34px; padding-right: 34px; }
   .pied:has(.fleurs-pied) { padding-bottom: 150px; }
 }
 html.etapes-mobile .page-etape > .pied:has(.fleurs-pied) { padding-bottom: 130px; }
+/* Dans une section qui défile, le bouquet du bas suit la fin du contenu (et non le bas de l'écran) */
+html.etapes-mobile .page-etape > .fleurs-coin-bas {
+  position: relative; flex: none; order: 99; align-self: flex-end; right: auto; bottom: auto;
+  margin: -70px -34px -52px auto;
+}
+html.etapes-mobile .page-etape:has(> .fleurs-coin-bas) { justify-content: safe center; }
 html.etapes-mobile .page-etape > .pied .fleurs-pied { bottom: -52px; right: -34px; }
 .infos .voile-jaune { left: -12%; top: 0; width: min(640px, 90vw); height: 80%; }
 .infos .voile-peche { right: -12%; bottom: 0; width: min(640px, 90vw); height: 80%; }
